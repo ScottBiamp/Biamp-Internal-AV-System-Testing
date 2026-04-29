@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dallas 1 AV System Test Form</title>
+  <style>
+    :root {
+      --biamp-red: #d71920;
+      --dark: #1f1f1f;
+      --mid: #666;
+      --light: #f5f5f5;
+      --border: #ddd;
+      --pass: #1f8f4d;
+      --fail: #c62828;
+      --na: #777;
+      --warning: #f9a825;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f0f2f5;
+      color: var(--dark);
+    }
+
+    header {
+      background: white;
+      border-bottom: 5px solid var(--biamp-red);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header .status {
+      font-size: 13px;
+      color: var(--mid);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px 48px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card-body {
+      padding: 18px 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 13px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .helper {
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 6px;
+    }
+
+    details {
+      border-top: 1px solid var(--border);
+    }
+
+    details:first-of-type {
+      border-top: none;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 18px 20px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: "+";
+      font-size: 22px;
+      color: var(--biamp-red);
+    }
+
+    details[open] summary::after {
+      content: "–";
+    }
+
+    .section-content {
+      padding: 0 20px 18px;
+    }
+
+    .test-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+
+    .test-topline {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .test-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .test-procedure {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.45;
+    }
+
+    .radio-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill input {
+      display: none;
+    }
+
+    .pill span {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fafafa;
+    }
+
+    .pill input:checked + span.pass {
+      background: var(--pass);
+      color: white;
+      border-color: var(--pass);
+    }
+
+    .pill input:checked + span.fail {
+      background: var(--fail);
+      color: white;
+      border-color: var(--fail);
+    }
+
+    .pill input:checked + span.na {
+      background: var(--na);
+      color: white;
+      border-color: var(--na);
+    }
+
+    .notes {
+      margin-top: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary {
+      background: var(--biamp-red);
+      color: white;
+    }
+
+    .secondary {
+      background: #eee;
+      color: #222;
+    }
+
+    .danger {
+      background: #222;
+      color: white;
+    }
+
+    .banner {
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      color: #5d4300;
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 220px;
+    }
+
+    progress {
+      width: 140px;
+      height: 12px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    .summary-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .grid, .test-topline, .summary-box {
+        grid-template-columns: 1fr;
+      }
+
+      .radio-row {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Dallas 1 AV System Test Form</h1>
+      <div class="status">Operational Health Check · BYOM Collaboration Room · Autosaves locally in this browser</div>
+    </div>
+    <div class="progress-wrap">
+      <progress id="progressBar" value="0" max="100"></progress>
+      <span id="progressText" class="small">0% complete</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="banner">
+      Prototype note: this demo uses browser local storage for autosave. In Power Apps, the same behavior should be handled by saving each test item to a SharePoint list as the tester works.
+    </div>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Test Session Details</h2>
+        <span id="saveStatus" class="small">Not saved yet</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div>
+            <label for="testerName">Tester Name</label>
+            <input id="testerName" type="text" placeholder="Enter name" />
+          </div>
+          <div>
+            <label for="testDate">Date</label>
+            <input id="testDate" type="date" />
+          </div>
+          <div>
+            <label for="overallStatus">Overall Status</label>
+            <select id="overallStatus">
+              <option value="In Progress">In Progress</option>
+              <option value="Pass">Pass</option>
+              <option value="Pass with Notes">Pass with Notes</option>
+              <option value="Fail">Fail</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <label for="sessionNotes">Overall Notes / Issues Observed</label>
+          <textarea id="sessionNotes" placeholder="Summarize any issues, follow-up actions, or escalation notes."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Dallas 1 Test Checklist</h2>
+        <div class="actions">
+          <button class="secondary" onclick="expandAll()">Expand All</button>
+          <button class="secondary" onclick="collapseAll()">Collapse All</button>
+        </div>
+      </div>
+
+      <details open>
+        <summary>1. Room Readiness</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="room-ready">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Physical room and cable readiness</div>
+                <div class="test-procedure">Verify display is intact, USB-C cable is accessible, no loose/disconnected cables are visible, and the room appears ready for use.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:room-ready}}</div>
+            </div>
+            <div class="notes"><textarea data-note="room-ready" placeholder="Notes"></textarea></div>
+          </div>
+          <div class="test-item" data-test="naso-ready">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Evoko Naso panel check</div>
+                <div class="test-procedure">Verify the Naso panel is powered, responsive, shows Dallas 1, and displays room availability.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:naso-ready}}</div>
+            </div>
+            <div class="notes"><textarea data-note="naso-ready" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>2. Display Control</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="display-on-off">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Display ON/OFF via Impera Uniform 8U</div>
+                <div class="test-procedure">Turn display OFF, wait 10 seconds, then turn display ON. Confirm reliable response and no stuck “No Signal” state.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:display-on-off}}</div>
+            </div>
+            <div class="notes"><textarea data-note="display-on-off" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>3. Local Presentation</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="local-video">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">USB-C local presentation</div>
+                <div class="test-procedure">Connect laptop to EasyConnect MPX250 USB-C. Confirm content appears on display with correct aspect ratio and no flicker.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:local-video}}</div>
+            </div>
+            <div class="notes"><textarea data-note="local-video" placeholder="Notes"></textarea></div>
+          </div>
+          <div class="test-item" data-test="usb-charge">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">USB-C charging</div>
+                <div class="test-procedure">Confirm connected laptop indicates it is charging from the MPX250 USB-C connection.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:usb-charge}}</div>
+            </div>
+            <div class="notes"><textarea data-note="usb-charge" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>4. USB Peripheral Access</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="camera-enumeration">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Camera appears on laptop</div>
+                <div class="test-procedure">Open Teams/Zoom device settings and confirm the Vidi250 camera is available as a selectable camera.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:camera-enumeration}}</div>
+            </div>
+            <div class="notes"><textarea data-note="camera-enumeration" placeholder="Notes"></textarea></div>
+          </div>
+          <div class="test-item" data-test="audio-enumeration">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Microphone and speaker appear on laptop</div>
+                <div class="test-procedure">Confirm room microphone and speaker playback devices are available in the UC client audio settings.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:audio-enumeration}}</div>
+            </div>
+            <div class="notes"><textarea data-note="audio-enumeration" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>5. Camera, Microphone, and Speaker</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="camera-preview">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Camera preview</div>
+                <div class="test-procedure">Open camera preview in UC client. Confirm live image, reasonable framing, no freeze, and acceptable latency.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:camera-preview}}</div>
+            </div>
+            <div class="notes"><textarea data-note="camera-preview" placeholder="Notes"></textarea></div>
+          </div>
+          <div class="test-item" data-test="microphone">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Microphone pickup</div>
+                <div class="test-procedure">Speak from seated positions and confirm audio meter activity with clean, intelligible pickup.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:microphone}}</div>
+            </div>
+            <div class="notes"><textarea data-note="microphone" placeholder="Notes"></textarea></div>
+          </div>
+          <div class="test-item" data-test="speaker-playback">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Speaker playback</div>
+                <div class="test-procedure">Play test audio from laptop. Confirm clear playback through room speakers with no distortion or crackling.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:speaker-playback}}</div>
+            </div>
+            <div class="notes"><textarea data-note="speaker-playback" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>6. BYOM Meeting Workflow</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="byom-call">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Teams BYOM call</div>
+                <div class="test-procedure">Join a Teams test meeting from laptop. Confirm far end sees room camera, hears room microphone, and local room hears far-end audio.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:byom-call}}</div>
+            </div>
+            <div class="notes"><textarea data-note="byom-call" placeholder="Notes"></textarea></div>
+          </div>
+          <div class="test-item" data-test="content-share-call">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Content share during call</div>
+                <div class="test-procedure">Share content from the laptop during the active Teams meeting. Confirm content is visible locally and to the far end.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:content-share-call}}</div>
+            </div>
+            <div class="notes"><textarea data-note="content-share-call" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>7. Disconnect Recovery</summary>
+        <div class="section-content">
+          <div class="test-item" data-test="disconnect-recovery">
+            <div class="test-topline">
+              <div>
+                <div class="test-title">Return to ready state</div>
+                <div class="test-procedure">Disconnect USB-C from laptop. Confirm display and room system return to idle/default state without frozen content.</div>
+              </div>
+              <div class="radio-row">{{RADIOS:disconnect-recovery}}</div>
+            </div>
+            <div class="notes"><textarea data-note="disconnect-recovery" placeholder="Notes"></textarea></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Session Summary</h2>
+      </div>
+      <div class="card-body">
+        <div class="summary-box">
+          <div class="metric"><strong id="passCount">0</strong>Pass</div>
+          <div class="metric"><strong id="failCount">0</strong>Fail</div>
+          <div class="metric"><strong id="naCount">0</strong>N/A</div>
+          <div class="metric"><strong id="openCount">0</strong>Open</div>
+        </div>
+        <div class="actions">
+          <button class="secondary" onclick="downloadJson()">Export JSON</button>
+          <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+          <button class="danger" onclick="clearForm()">Clear Prototype Data</button>
+          <button class="primary" onclick="markComplete()">Mark Complete</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'dallas1_av_test_form_v1';
+    const testIds = [
+      'room-ready','naso-ready','display-on-off','local-video','usb-charge',
+      'camera-enumeration','audio-enumeration','camera-preview','microphone',
+      'speaker-playback','byom-call','content-share-call','disconnect-recovery'
+    ];
+
+    function radioMarkup(id) {
+      return `
+        <label class="pill"><input type="radio" name="${id}" value="Pass"><span class="pass">Pass</span></label>
+        <label class="pill"><input type="radio" name="${id}" value="Fail"><span class="fail">Fail</span></label>
+        <label class="pill"><input type="radio" name="${id}" value="N/A"><span class="na">N/A</span></label>
+      `;
+    }
+
+    document.body.innerHTML = document.body.innerHTML.replace(/\{\{RADIOS:([^}]+)\}\}/g, (_, id) => radioMarkup(id));
+
+    function getData() {
+      const data = {
+        room: 'Dallas 1',
+        testerName: document.getElementById('testerName').value,
+        testDate: document.getElementById('testDate').value,
+        overallStatus: document.getElementById('overallStatus').value,
+        sessionNotes: document.getElementById('sessionNotes').value,
+        lastSaved: new Date().toISOString(),
+        tests: {}
+      };
+
+      testIds.forEach(id => {
+        const checked = document.querySelector(`input[name="${id}"]:checked`);
+        const note = document.querySelector(`textarea[data-note="${id}"]`);
+        data.tests[id] = {
+          result: checked ? checked.value : '',
+          notes: note ? note.value : ''
+        };
+      });
+      return data;
+    }
+
+    function saveData() {
+      const data = getData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      document.getElementById('saveStatus').textContent = `Autosaved ${new Date().toLocaleTimeString()}`;
+      updateProgress();
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        document.getElementById('testDate').valueAsDate = new Date();
+        updateProgress();
+        return;
+      }
+      const data = JSON.parse(saved);
+      document.getElementById('testerName').value = data.testerName || '';
+      document.getElementById('testDate').value = data.testDate || '';
+      document.getElementById('overallStatus').value = data.overallStatus || 'In Progress';
+      document.getElementById('sessionNotes').value = data.sessionNotes || '';
+
+      testIds.forEach(id => {
+        if (data.tests && data.tests[id]) {
+          const result = data.tests[id].result;
+          if (result) {
+            const input = document.querySelector(`input[name="${id}"][value="${result}"]`);
+            if (input) input.checked = true;
+          }
+          const note = document.querySelector(`textarea[data-note="${id}"]`);
+          if (note) note.value = data.tests[id].notes || '';
+        }
+      });
+      document.getElementById('saveStatus').textContent = data.lastSaved ? `Restored autosave` : 'Loaded';
+      updateProgress();
+    }
+
+    function updateProgress() {
+      let pass = 0, fail = 0, na = 0, open = 0;
+      testIds.forEach(id => {
+        const checked = document.querySelector(`input[name="${id}"]:checked`);
+        if (!checked) open++;
+        else if (checked.value === 'Pass') pass++;
+        else if (checked.value === 'Fail') fail++;
+        else if (checked.value === 'N/A') na++;
+      });
+      const complete = testIds.length - open;
+      const pct = Math.round((complete / testIds.length) * 100);
+      document.getElementById('progressBar').value = pct;
+      document.getElementById('progressText').textContent = `${pct}% complete`;
+      document.getElementById('passCount').textContent = pass;
+      document.getElementById('failCount').textContent = fail;
+      document.getElementById('naCount').textContent = na;
+      document.getElementById('openCount').textContent = open;
+    }
+
+    function expandAll() {
+      document.querySelectorAll('details').forEach(d => d.open = true);
+    }
+
+    function collapseAll() {
+      document.querySelectorAll('details').forEach(d => d.open = false);
+    }
+
+    function markComplete() {
+      const fails = [...document.querySelectorAll('input[type="radio"]:checked')].filter(i => i.value === 'Fail').length;
+      const open = testIds.filter(id => !document.querySelector(`input[name="${id}"]:checked`)).length;
+      document.getElementById('overallStatus').value = fails > 0 ? 'Fail' : open > 0 ? 'Pass with Notes' : 'Pass';
+      saveData();
+      alert('Session marked complete.');
+    }
+
+    function clearForm() {
+      if (!confirm('Clear all saved prototype data for Dallas 1?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+
+    function downloadJson() {
+      const data = getData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Dallas_1_AV_Test_${data.testDate || 'session'}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('input', saveData);
+    document.addEventListener('change', saveData);
+    window.addEventListener('load', loadData);
+    setInterval(saveData, 15000);
+  </script>
+</body>
+</html>
