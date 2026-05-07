@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dallas AV System Test Form</title>
+  <style>
+    :root {
+      --biamp-red: #d71920;
+      --dark: #1f1f1f;
+      --mid: #666;
+      --light: #f5f5f5;
+      --border: #ddd;
+      --pass: #1f8f4d;
+      --fail: #c62828;
+      --na: #777;
+      --warning: #f9a825;
+      --info: #1565c0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f0f2f5;
+      color: var(--dark);
+    }
+
+    header {
+      background: white;
+      border-bottom: 5px solid var(--biamp-red);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      gap: 18px;
+    }
+
+    header h1 { margin: 0; font-size: 24px; }
+    header .status { font-size: 13px; color: var(--mid); }
+
+    main {
+      max-width: 1160px;
+      margin: 24px auto;
+      padding: 0 16px 48px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-header h2 { margin: 0; font-size: 18px; }
+    .card-body { padding: 18px 20px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 13px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+    }
+
+    textarea { min-height: 80px; resize: vertical; }
+    .helper { font-size: 12px; color: var(--mid); margin-top: 6px; }
+
+    .room-description {
+      background: #fafafa;
+      border-left: 5px solid var(--biamp-red);
+      padding: 14px 16px;
+      border-radius: 8px;
+      line-height: 1.45;
+    }
+
+    .equipment-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      background: #eee;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    details { border-top: 1px solid var(--border); }
+    details:first-of-type { border-top: none; }
+
+    summary {
+      cursor: pointer;
+      padding: 18px 20px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 22px; color: var(--biamp-red); }
+    details[open] summary::after { content: "–"; }
+
+    .section-content { padding: 0 20px 18px; }
+
+    .test-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+
+    .test-topline {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .test-title { font-weight: 700; margin-bottom: 6px; }
+    .test-procedure { font-size: 14px; color: #333; line-height: 1.45; }
+
+    .radio-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill input { display: none; }
+    .pill span {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fafafa;
+    }
+
+    .pill input:checked + span.pass { background: var(--pass); color: white; border-color: var(--pass); }
+    .pill input:checked + span.fail { background: var(--fail); color: white; border-color: var(--fail); }
+    .pill input:checked + span.na { background: var(--na); color: white; border-color: var(--na); }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .notes { margin-top: 12px; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary { background: var(--biamp-red); color: white; }
+    .secondary { background: #eee; color: #222; }
+    .danger { background: #222; color: white; }
+
+    .banner {
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      color: #5d4300;
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 230px;
+    }
+
+    progress { width: 140px; height: 12px; }
+    .small { font-size: 12px; color: var(--mid); }
+
+    .summary-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric strong { display: block; font-size: 24px; margin-bottom: 4px; }
+
+    @media print {
+      header { position: static; }
+      button, .actions, .banner { display: none; }
+      body { background: white; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+      details { page-break-inside: avoid; }
+    }
+
+    @media (max-width: 820px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .grid, .test-topline, .summary-box, .meta-row { grid-template-columns: 1fr; }
+      .radio-row { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 id="pageTitle">Dallas AV System Test Form</h1>
+      <div id="pageSubtitle" class="status">Operational Health Check · Autosaves locally in this browser</div>
+    </div>
+    <div class="progress-wrap">
+      <progress id="progressBar" value="0" max="100"></progress>
+      <span id="progressText" class="small">0% complete</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="banner">
+      Prototype note: this demo uses browser local storage for autosave. In Power Apps, save each test item as a SharePoint record so a tester can stop, resume, or hand off the test without losing progress.
+    </div>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Test Session Details</h2>
+        <span id="saveStatus" class="small">Not saved yet</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div>
+            <label for="roomSelect">Room</label>
+            <select id="roomSelect"></select>
+          </div>
+          <div>
+            <label for="testerName">Tester Name</label>
+            <input id="testerName" type="text" placeholder="Enter name" />
+          </div>
+          <div>
+            <label for="testDate">Date</label>
+            <input id="testDate" type="date" />
+          </div>
+          <div>
+            <label for="overallStatus">Overall Status</label>
+            <select id="overallStatus">
+              <option value="In Progress">In Progress</option>
+              <option value="Pass">Pass</option>
+              <option value="Pass with Notes">Pass with Notes</option>
+              <option value="Fail">Fail</option>
+            </select>
+          </div>
+          <div>
+            <label for="escalationRequired">Escalation Required</label>
+            <select id="escalationRequired">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+          <div>
+            <label for="sessionId">Session ID</label>
+            <input id="sessionId" type="text" readonly />
+          </div>
+        </div>
+        <div id="roomInfo" class="room-description" style="margin-top:16px;"></div>
+        <div style="margin-top:16px;">
+          <label for="sessionNotes">Overall Notes / Issues Observed</label>
+          <textarea id="sessionNotes" placeholder="Summarize any issues, follow-up actions, or escalation notes."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2 id="checklistTitle">Test Checklist</h2>
+        <div class="actions">
+          <button class="secondary" onclick="expandAll()">Expand All</button>
+          <button class="secondary" onclick="collapseAll()">Collapse All</button>
+        </div>
+      </div>
+      <div id="checklistContainer"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Session Summary</h2>
+      </div>
+      <div class="card-body">
+        <div class="summary-box">
+          <div class="metric"><strong id="passCount">0</strong>Pass</div>
+          <div class="metric"><strong id="failCount">0</strong>Fail</div>
+          <div class="metric"><strong id="naCount">0</strong>N/A</div>
+          <div class="metric"><strong id="openCount">0</strong>Open</div>
+        </div>
+        <div class="actions">
+          <button class="secondary" onclick="downloadJson()">Export JSON</button>
+          <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+          <button class="danger" onclick="clearCurrentRoomData()">Clear Current Room Data</button>
+          <button class="primary" onclick="markComplete()">Mark Complete</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const ROOMS = {
+      "Dallas 1": {
+        type: "BYOM Collaboration Room",
+        workflow: "Personal-device UC workflow using EasyConnect MPX250 for room peripheral access and USB-C charging. Display ON/OFF controlled by Impera Uniform 8U. Room booking via Evoko Naso / Biamp Workplace / O365.",
+        equipment: ["MRB-M-X400-C-CIC6", "TesiraCONNECT TC-5", "Vidi250", "EasyConnect MPX250", "Impera Uniform 8U", "Evoko Naso"],
+        sections: [
+          section("Room Readiness", [
+            test("Physical room and cable readiness", "Verify display is intact, USB-C cable is accessible, no loose/disconnected cables are visible, and the room appears ready for use."),
+            test("Evoko Naso panel check", "Verify the Naso panel is powered, responsive, shows Dallas 1, and displays room availability.")
+          ]),
+          section("Display Control", [
+            test("Display ON/OFF via Impera Uniform 8U", "Turn display OFF, wait 10 seconds, then turn display ON. Confirm reliable response and no stuck “No Signal” state.")
+          ]),
+          section("Local Presentation", [
+            test("USB-C local presentation", "Connect laptop to EasyConnect MPX250 USB-C. Confirm content appears on display with correct aspect ratio and no flicker."),
+            test("USB-C charging", "Confirm connected laptop indicates it is charging from the MPX250 USB-C connection.")
+          ]),
+          section("USB Peripheral Access", [
+            test("Camera appears on laptop", "Open Teams/Zoom device settings and confirm the Vidi250 camera is available as a selectable camera."),
+            test("Microphone and speaker appear on laptop", "Confirm room microphone and speaker playback devices are available in the UC client audio settings.")
+          ]),
+          section("Camera, Microphone, and Speaker", [
+            test("Camera preview", "Open camera preview in UC client. Confirm live image, reasonable framing, no freeze, and acceptable latency."),
+            test("Microphone pickup", "Speak from seated positions and confirm audio meter activity with clean, intelligible pickup."),
+            test("Speaker playback", "Play test audio from laptop. Confirm clear playback through room speakers with no distortion or crackling.")
+          ]),
+          section("BYOM Meeting Workflow", [
+            test("Teams BYOM call", "Join a Teams test meeting from laptop. Confirm far end sees room camera, hears room microphone, and local room hears far-end audio."),
+            test("Content share during call", "Share content from the laptop during the active Teams meeting. Confirm content is visible locally and to the far end.")
+          ]),
+          section("Disconnect Recovery", [
+            test("Return to ready state", "Disconnect USB-C from laptop. Confirm display and room system return to idle/default state without frozen content.")
+          ])
+        ]
+      },
+
+      "Dallas 2": {
+        type: "BYOM Collaboration Room with MPX Mode Selection",
+        workflow: "Connect device to EasyConnect MPX200 USB-C, select mode on the controller, and validate MPX switching of AV and peripherals to the user device. Display ON/OFF controlled by Impera Uniform 8U. Room booking via Evoko Naso / Biamp Workplace / O365.",
+        equipment: ["MRB-M-X400-C-CIC6", "TesiraCONNECT TC-5", "Vidi250", "EasyConnect MPX250", "Impera Uniform 8U", "Evoko Naso"],
+        sections: [
+          section("Room Readiness", [
+            test("Physical room and cable readiness", "Verify display is intact, USB-C cable is accessible, MPX controller is reachable, and no visible cables/devices are disconnected."),
+            test("Evoko Naso panel check", "Verify the Naso panel is powered, responsive, shows Dallas 2, and displays room availability.")
+          ]),
+          section("Display Control", [
+            test("Display ON/OFF via Impera Uniform 8U", "Turn display OFF, wait 10 seconds, then turn display ON. Confirm reliable response and no stuck “No Signal” state.")
+          ]),
+          section("MPX Connection and Mode Selection", [
+            test("USB-C connection to MPX", "Connect laptop to the EasyConnect MPX USB-C cable and confirm the device detects the connection."),
+            test("Mode selection on controller", "Use the MPX controller to select the intended BYOM/presentation mode. Confirm the status indication changes appropriately."),
+            test("Peripheral auto-switching", "After mode selection, confirm AV and room peripherals switch to the connected laptop without manual device resets.")
+          ]),
+          section("Local Presentation", [
+            test("Local content display", "Present content from the connected laptop. Confirm image appears on room display with correct aspect ratio and no flicker."),
+            test("Laptop audio playback", "Play test audio from laptop. Confirm audio routes through room speakers cleanly.")
+          ]),
+          section("USB Peripheral Access", [
+            test("Camera appears on laptop", "Open UC device settings and confirm the Vidi250 camera is available as a selectable camera."),
+            test("Microphone and speaker appear on laptop", "Confirm room microphone and room speaker playback devices are available in the UC client.")
+          ]),
+          section("BYOM Meeting Workflow", [
+            test("Teams BYOM call", "Join a Teams test meeting from laptop. Confirm far-end camera, microphone, and speaker performance."),
+            test("Content share during call", "Share laptop content while in the Teams meeting. Confirm local and far-end visibility.")
+          ]),
+          section("Disconnect Recovery", [
+            test("Return to idle after disconnect", "Disconnect USB-C and confirm display/system returns to ready state without frozen shared content."),
+            test("Reconnect behavior", "Reconnect the laptop and confirm the MPX workflow starts normally again.")
+          ])
+        ]
+      },
+
+      "Dallas 3": {
+        type: "Wireless Collaboration Room",
+        workflow: "Wireless collaboration through Max Connect session shown on display. Room peripherals are available to a UC client on the user device. MPX is used for USB-C charging only. Display ON/OFF controlled by Impera Uniform 8U.",
+        equipment: ["TesiraCONNECT TC-5", "Parlé VBC 2500", "Max Connect", "Touch 8 Max", "Impera Uniform 8U", "Evoko Naso"],
+        sections: [
+          section("Room Readiness", [
+            test("Physical room and display readiness", "Verify display is intact, Max Connect session information is visible or available, Touch 8 Max is present, and no visible cables/devices are disconnected."),
+            test("Evoko Naso panel check", "Verify the Naso panel is powered, responsive, shows Dallas 3, and displays room availability.")
+          ]),
+          section("Display Control", [
+            test("Display ON/OFF via Impera Uniform 8U", "Turn display OFF, wait 10 seconds, then turn display ON. Confirm the Max Connect landing/session screen returns correctly.")
+          ]),
+          section("Max Connect Wireless Collaboration", [
+            test("Session visibility", "Confirm the display shows the Max Connect session name, join instructions, or QR/session information."),
+            test("Wireless connection", "Connect a laptop to the Max Connect session. Confirm the device joins successfully."),
+            test("Wireless screen share", "Share laptop screen wirelessly. Confirm content appears on display with stable image and acceptable latency."),
+            test("Touch 8 Max control", "Use Touch 8 Max to confirm expected session controls are responsive, including start/stop/share or equivalent controls available in the room.")
+          ]),
+          section("UC Peripheral Access", [
+            test("VBC 2500 camera access", "Open UC client on laptop and confirm the Parlé VBC 2500 camera is available and provides live video."),
+            test("Microphone and speaker access", "Confirm room microphone and speaker playback devices are available in the UC client."),
+            test("Camera framing and audio quality", "Verify camera framing is usable and speech from normal seated positions is intelligible.")
+          ]),
+          section("BYOM Meeting Workflow", [
+            test("Teams meeting with room peripherals", "Join a Teams meeting from laptop. Confirm far end sees room camera and hears room microphone, and local room hears far-end audio."),
+            test("Wireless content during meeting", "Share content wirelessly and confirm local display behavior. If also sharing in Teams, confirm far-end visibility.")
+          ]),
+          section("Disconnect Recovery", [
+            test("Stop wireless share", "Stop sharing from the laptop and confirm display returns to Max Connect idle/session screen."),
+            test("Session recovery", "Disconnect from the session and reconnect. Confirm the room is ready for the next user.")
+          ])
+        ]
+      },
+
+      "Dallas 4": {
+        type: "Mixed MTR + BYOM Collaboration Room",
+        workflow: "Native Microsoft Teams Room on the Biamp Internal tenant plus BYOM workflow via EasyConnect MPX200/MPX100. Display ON/OFF controlled by Impera Uniform 8U. Room booking via Evoko Naso / Biamp Workplace / O365.",
+        equipment: ["UCC-Lenovo TSC-MTR", "MRB-M-X400-C", "TesiraCONNECT TC-5", "Vidi250", "EasyConnect MPX100", "EasyConnect MPX200", "Impera Uniform 8U", "Evoko Naso"],
+        sections: [
+          section("Room Readiness", [
+            test("Physical room and cable readiness", "Verify display is intact, MTR controller is powered, MPX USB-C cable is accessible, and no visible cables/devices are disconnected."),
+            test("Evoko Naso panel check", "Verify the Naso panel is powered, responsive, shows Dallas 4, and displays room availability."),
+            test("MTR home screen", "Confirm the MTR controller/display shows the expected Teams Room home screen and is signed into the Biamp Internal tenant.")
+          ]),
+          section("Display Control", [
+            test("Display ON/OFF via Impera Uniform 8U", "Turn display OFF, wait 10 seconds, then turn display ON. Confirm the MTR home screen returns correctly.")
+          ]),
+          section("Native MTR Meeting Workflow", [
+            test("Join scheduled Teams meeting", "Join a scheduled or test Teams meeting from the MTR interface. Confirm meeting joins successfully."),
+            test("MTR camera", "Confirm the far end receives Vidi250 camera image from the room."),
+            test("MTR microphone", "Speak from normal seating positions and confirm far end receives clear audio."),
+            test("MTR speaker playback", "Confirm far-end audio plays through room speakers at an appropriate level."),
+            test("MTR content sharing", "Share content into the Teams meeting using the intended room method and confirm local/far-end visibility.")
+          ]),
+          section("BYOM Mode Selection", [
+            test("Connect laptop to MPX200 USB-C", "Connect laptop to MPX200 USB-C and confirm connection/charging behavior as expected."),
+            test("Select BYOM mode", "Use the MPX controller to select BYOM mode. Confirm MPX100/MPX200 switches AV and peripherals to the laptop."),
+            test("Verify MTR to BYOM transition", "Confirm room peripherals are no longer locked to the MTR and are available to the connected laptop.")
+          ]),
+          section("BYOM Meeting Workflow", [
+            test("Laptop camera access", "Open UC client on laptop and confirm Vidi250 camera is available and live."),
+            test("Laptop audio access", "Confirm room microphone and speaker playback devices are available on laptop."),
+            test("Teams BYOM call", "Join Teams from laptop and confirm far-end camera, microphone, and speaker performance."),
+            test("BYOM content share", "Share laptop content during the BYOM call and confirm local/far-end visibility.")
+          ]),
+          section("Mode Recovery", [
+            test("Return to MTR mode", "Disconnect laptop or select MTR/native mode. Confirm MTR home screen and native room function return."),
+            test("End state check", "End all calls and confirm the room returns to ready state without stuck audio/video routing.")
+          ])
+        ]
+      },
+
+      "Boardroom": {
+        type: "Executive MTR Boardroom",
+        workflow: "Integrated Microsoft Teams Room with Impera Tango / UCC Touch Panel page flip for room control, display ON/OFF, and mic mute control. Room booking via Evoko Naso / Biamp Workplace / O365.",
+        equipment: ["MRB-L-X400-C-TSCIP-T", "Impera Tango", "TesiraCONNECT TC-5", "Vidi280", "UCC Lenovo TSC2-IP-MTR", "Evoko Naso"],
+        sections: [
+          section("Room Readiness", [
+            test("Executive room readiness", "Verify displays, table devices, MTR controller, camera, and microphones appear physically ready with no loose/disconnected cables."),
+            test("Evoko Naso panel check", "Verify the Naso panel is powered, responsive, shows Boardroom, and displays room availability."),
+            test("MTR home screen", "Confirm MTR controller/display shows the expected Teams Room home screen and is signed into the Biamp Internal tenant.")
+          ]),
+          section("Tango / UCC Room Control", [
+            test("Open Room Control page", "On the UCC/Tango touch panel, tap Room Control and confirm room control page opens properly."),
+            test("Display ON/OFF control", "Use Display Control ON/OFF. Confirm display responds reliably and returns to the MTR home screen."),
+            test("Mic mute control", "Use UCC/Tango page flip mic mute control. Confirm mute state changes visibly and predictably."),
+            test("Page flip responsiveness", "Move between Teams controls and room control page. Confirm touch panel remains responsive with no UI freezes.")
+          ]),
+          section("Native MTR Meeting Workflow", [
+            test("Join scheduled Teams meeting", "Join a scheduled or ad hoc Teams meeting from the MTR controller. Confirm meeting joins successfully."),
+            test("Vidi280 camera", "Confirm far end receives live Vidi280 camera image with usable executive-room framing."),
+            test("Room microphone pickup", "Speak from multiple boardroom seats and confirm far end receives clear, consistent audio."),
+            test("Far-end speaker playback", "Confirm far-end audio plays through room speakers with comfortable volume and no distortion."),
+            test("Mute sync during meeting", "Mute/unmute from the touch panel and confirm far end observes the expected mute state.")
+          ]),
+          section("Presentation and Content Share", [
+            test("Local presentation", "Present content using the intended boardroom input/workflow. Confirm content appears locally with correct aspect ratio."),
+            test("Content share to Teams", "Share content during an active Teams meeting. Confirm content is visible locally and to far-end participants."),
+            test("Return from content share", "Stop sharing and confirm the room returns to camera/meeting view cleanly.")
+          ]),
+          section("Executive Reliability Checks", [
+            test("Volume control", "Adjust volume up/down from the room interface. Confirm changes are smooth and appropriate."),
+            test("Call end recovery", "End the Teams meeting and confirm the room returns to idle/home state."),
+            test("Rapid rejoin check", "Join a second test meeting or rejoin the same meeting to confirm system is ready for back-to-back executive use.")
+          ])
+        ]
+      }
+          ,
+
+      "Rashid's Office": {
+        type: "Executive Office AV System",
+        workflow: "Local presentation and control environment with source selection, volume, and shade control via Touch 8i.",
+        equipment: ["Tesira Forte X400", "(4) TCM", "(2) P6 Surface Mount Speakers", "Mac Mini", "Touch 8i", "Sony 75\" Display"],
+        sections: [
+          section("Room Readiness", [
+            test("Physical readiness", "Verify display, Touch 8i, and table microphones are present and undamaged."),
+            test("System powered", "Confirm Mac Mini and AV system are powered and responsive.")
+          ]),
+          section("Display & Control", [
+            test("Display ON/OFF", "Use Touch 8i to turn display ON and OFF."),
+            test("Source selection", "Switch between available sources and confirm proper routing."),
+            test("Shade control", "Adjust shades and confirm proper operation.")
+          ]),
+          section("Audio", [
+            test("Microphone pickup", "Speak from seating positions and confirm audio pickup."),
+            test("Speaker playback", "Play audio and confirm even coverage and clarity.")
+          ])
+        ]
+      },
+
+      "Joe's Office": {
+        type: "Wireless UC Office",
+        workflow: "Wireless collaboration using Max Connect and integrated VBC2500 device.",
+        equipment: ["VBC2500", "Max Connect", "65\" Display"],
+        sections: [
+          section("Room Readiness", [
+            test("Display and device check", "Verify display and VBC2500 are powered and ready."),
+            test("Max Connect availability", "Confirm Max Connect session is visible.")
+          ]),
+          section("Wireless Collaboration", [
+            test("Connect to session", "Join Max Connect session from laptop."),
+            test("Screen share", "Share screen and verify display output."),
+            test("Camera and audio", "Confirm VBC2500 camera and audio are working in UC client.")
+          ])
+        ]
+      },
+
+      "Experience Center": {
+        type: "Experience Center Demo Environment",
+        workflow: "Demonstration of background music, paging zones, and sound masking control using TEC-X and paging station.",
+        equipment: ["Sony 65\" Display", "TEC-X 1000", "QTX 600", "NPX G1100 Paging Station", "Tesira Forte X400"],
+        sections: [
+          section("Background Music", [
+            test("Bluetooth connection", "Connect a device via Bluetooth and confirm playback."),
+            test("Zone control", "Adjust zones, mute, and volume via TEC-X 1000.")
+          ]),
+          section("Paging", [
+            test("All call page", "Trigger All Call page and confirm audio across zones."),
+            test("Zone-specific pages", "Trigger specific zone pages and confirm correct routing."),
+            test("Auto ducking", "Confirm BGM ducks during paging.")
+          ]),
+          section("System Control", [
+            test("Display", "Verify demo display shows correct interface."),
+            test("Paging station", "Confirm NPX G1100 is responsive and functional.")
+          ])
+        ]
+      }
+    };
+
+    function section(name, tests) { return { name, tests }; }
+    function test(title, procedure) { return { title, procedure }; }
+
+    let currentRoom = "Dallas 1";
+    let currentTestKeys = [];
+
+    function slug(value) {
+      return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    function storageKey(room) {
+      return `dallas_av_test_form_${slug(room)}_v3`;
+    }
+
+    function getToday() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function radioMarkup(key) {
+      return `
+        <label class="pill"><input type="radio" name="${key}" value="Pass"><span class="pass">Pass</span></label>
+        <label class="pill"><input type="radio" name="${key}" value="Fail"><span class="fail">Fail</span></label>
+        <label class="pill"><input type="radio" name="${key}" value="N/A"><span class="na">N/A</span></label>
+      `;
+    }
+
+    function renderRoomSelect() {
+      const select = document.getElementById('roomSelect');
+      select.innerHTML = Object.keys(ROOMS).map(room => `<option value="${room}">${room}</option>`).join('');
+      select.value = currentRoom;
+    }
+
+    function renderRoom() {
+      const room = ROOMS[currentRoom];
+      currentTestKeys = [];
+
+      document.getElementById('pageTitle').textContent = `${currentRoom} AV System Test Form`;
+      document.getElementById('pageSubtitle').textContent = `Operational Health Check · ${room.type} · Autosaves locally in this browser`;
+      document.getElementById('checklistTitle').textContent = `${currentRoom} Test Checklist`;
+      document.getElementById('sessionId').value = `${slug(currentRoom)}-${getToday()}`;
+
+      document.getElementById('roomInfo').innerHTML = `
+        <strong>${room.type}</strong><br />
+        ${room.workflow}
+        <div class="equipment-list">${room.equipment.map(e => `<span class="chip">${e}</span>`).join('')}</div>
+      `;
+
+      const html = room.sections.map((sectionObj, sectionIndex) => {
+        const testsHtml = sectionObj.tests.map((testObj, testIndex) => {
+          const key = `${slug(currentRoom)}_${slug(sectionObj.name)}_${testIndex + 1}`;
+          currentTestKeys.push(key);
+          return `
+            <div class="test-item" data-test="${key}">
+              <div class="test-topline">
+                <div>
+                  <div class="test-title">${testObj.title}</div>
+                  <div class="test-procedure">${testObj.procedure}</div>
+                </div>
+                <div class="radio-row">${radioMarkup(key)}</div>
+              </div>
+              <div class="meta-row">
+                <div>
+                  <label>Severity</label>
+                  <select data-severity="${key}">
+                    <option value="">Select if needed</option>
+                    <option value="Informational">Informational</option>
+                    <option value="Minor">Minor</option>
+                    <option value="Major">Major</option>
+                    <option value="Critical">Critical</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Retest Required</label>
+                  <select data-retest="${key}">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Escalate To</label>
+                  <select data-escalate="${key}">
+                    <option value="">Not required</option>
+                    <option value="AV Experience">AV Experience</option>
+                    <option value="IT">IT</option>
+                    <option value="Facilities">Facilities</option>
+                    <option value="Vendor / Integrator">Vendor / Integrator</option>
+                    <option value="Unknown">Unknown</option>
+                  </select>
+                </div>
+              </div>
+              <div class="notes"><textarea data-note="${key}" placeholder="Notes"></textarea></div>
+              <div class="helper" data-timestamp="${key}"></div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <details ${sectionIndex === 0 ? 'open' : ''}>
+            <summary>${sectionIndex + 1}. ${sectionObj.name}</summary>
+            <div class="section-content">${testsHtml}</div>
+          </details>
+        `;
+      }).join('');
+
+      document.getElementById('checklistContainer').innerHTML = html;
+      attachListeners();
+      loadData();
+      updateProgress();
+    }
+
+    function getData() {
+      const data = {
+        room: currentRoom,
+        testerName: document.getElementById('testerName').value,
+        testDate: document.getElementById('testDate').value,
+        overallStatus: document.getElementById('overallStatus').value,
+        escalationRequired: document.getElementById('escalationRequired').value,
+        sessionId: document.getElementById('sessionId').value,
+        sessionNotes: document.getElementById('sessionNotes').value,
+        lastSaved: new Date().toISOString(),
+        tests: {}
+      };
+
+      currentTestKeys.forEach(key => {
+        const checked = document.querySelector(`input[name="${key}"]:checked`);
+        const note = document.querySelector(`textarea[data-note="${key}"]`);
+        const severity = document.querySelector(`select[data-severity="${key}"]`);
+        const retest = document.querySelector(`select[data-retest="${key}"]`);
+        const escalate = document.querySelector(`select[data-escalate="${key}"]`);
+        const timestamp = document.querySelector(`[data-timestamp="${key}"]`);
+        data.tests[key] = {
+          result: checked ? checked.value : '',
+          notes: note ? note.value : '',
+          severity: severity ? severity.value : '',
+          retestRequired: retest ? retest.value : 'No',
+          escalateTo: escalate ? escalate.value : '',
+          timestamp: timestamp ? timestamp.dataset.value || '' : ''
+        };
+      });
+      return data;
+    }
+
+    function saveData() {
+      const data = getData();
+      localStorage.setItem(storageKey(currentRoom), JSON.stringify(data));
+      document.getElementById('saveStatus').textContent = `Autosaved ${new Date().toLocaleTimeString()}`;
+      updateProgress();
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem(storageKey(currentRoom));
+      document.getElementById('testerName').value = '';
+      document.getElementById('testDate').value = getToday();
+      document.getElementById('overallStatus').value = 'In Progress';
+      document.getElementById('escalationRequired').value = 'No';
+      document.getElementById('sessionNotes').value = '';
+      document.getElementById('sessionId').value = `${slug(currentRoom)}-${getToday()}`;
+
+      if (!saved) {
+        document.getElementById('saveStatus').textContent = 'No saved data for this room';
+        updateProgress();
+        return;
+      }
+
+      const data = JSON.parse(saved);
+      document.getElementById('testerName').value = data.testerName || '';
+      document.getElementById('testDate').value = data.testDate || getToday();
+      document.getElementById('overallStatus').value = data.overallStatus || 'In Progress';
+      document.getElementById('escalationRequired').value = data.escalationRequired || 'No';
+      document.getElementById('sessionId').value = data.sessionId || `${slug(currentRoom)}-${getToday()}`;
+      document.getElementById('sessionNotes').value = data.sessionNotes || '';
+
+      currentTestKeys.forEach(key => {
+        if (data.tests && data.tests[key]) {
+          const item = data.tests[key];
+          if (item.result) {
+            const input = document.querySelector(`input[name="${key}"][value="${item.result}"]`);
+            if (input) input.checked = true;
+          }
+          const note = document.querySelector(`textarea[data-note="${key}"]`);
+          const severity = document.querySelector(`select[data-severity="${key}"]`);
+          const retest = document.querySelector(`select[data-retest="${key}"]`);
+          const escalate = document.querySelector(`select[data-escalate="${key}"]`);
+          const timestamp = document.querySelector(`[data-timestamp="${key}"]`);
+          if (note) note.value = item.notes || '';
+          if (severity) severity.value = item.severity || '';
+          if (retest) retest.value = item.retestRequired || 'No';
+          if (escalate) escalate.value = item.escalateTo || '';
+          if (timestamp && item.timestamp) {
+            timestamp.dataset.value = item.timestamp;
+            timestamp.textContent = `Last updated: ${new Date(item.timestamp).toLocaleString()}`;
+          }
+        }
+      });
+      document.getElementById('saveStatus').textContent = 'Restored autosave';
+      updateProgress();
+    }
+
+    function updateProgress() {
+      let pass = 0, fail = 0, na = 0, open = 0;
+      currentTestKeys.forEach(key => {
+        const checked = document.querySelector(`input[name="${key}"]:checked`);
+        if (!checked) open++;
+        else if (checked.value === 'Pass') pass++;
+        else if (checked.value === 'Fail') fail++;
+        else if (checked.value === 'N/A') na++;
+      });
+      const complete = currentTestKeys.length - open;
+      const pct = currentTestKeys.length ? Math.round((complete / currentTestKeys.length) * 100) : 0;
+      document.getElementById('progressBar').value = pct;
+      document.getElementById('progressText').textContent = `${pct}% complete`;
+      document.getElementById('passCount').textContent = pass;
+      document.getElementById('failCount').textContent = fail;
+      document.getElementById('naCount').textContent = na;
+      document.getElementById('openCount').textContent = open;
+
+      if (fail > 0) document.getElementById('escalationRequired').value = 'Yes';
+    }
+
+    function updateTimestampForElement(el) {
+      const testItem = el.closest('.test-item');
+      if (!testItem) return;
+      const key = testItem.dataset.test;
+      const timestamp = document.querySelector(`[data-timestamp="${key}"]`);
+      if (!timestamp) return;
+      const now = new Date().toISOString();
+      timestamp.dataset.value = now;
+      timestamp.textContent = `Last updated: ${new Date(now).toLocaleString()}`;
+    }
+
+    function attachListeners() {
+      document.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.id === 'roomSelect') return;
+        el.addEventListener('input', () => { updateTimestampForElement(el); saveData(); });
+        el.addEventListener('change', () => { updateTimestampForElement(el); saveData(); });
+      });
+    }
+
+    function expandAll() {
+      document.querySelectorAll('details').forEach(d => d.open = true);
+    }
+
+    function collapseAll() {
+      document.querySelectorAll('details').forEach(d => d.open = false);
+    }
+
+    function markComplete() {
+      const fails = currentTestKeys.filter(key => {
+        const checked = document.querySelector(`input[name="${key}"]:checked`);
+        return checked && checked.value === 'Fail';
+      }).length;
+      const open = currentTestKeys.filter(key => !document.querySelector(`input[name="${key}"]:checked`)).length;
+      document.getElementById('overallStatus').value = fails > 0 ? 'Fail' : open > 0 ? 'Pass with Notes' : 'Pass';
+      document.getElementById('escalationRequired').value = fails > 0 ? 'Yes' : document.getElementById('escalationRequired').value;
+      saveData();
+      alert(`${currentRoom} session marked complete.`);
+    }
+
+    function clearCurrentRoomData() {
+      if (!confirm(`Clear all saved prototype data for ${currentRoom}?`)) return;
+      localStorage.removeItem(storageKey(currentRoom));
+      renderRoom();
+    }
+
+    function downloadJson() {
+      const data = getData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${data.room.replaceAll(' ', '_')}_AV_Test_${data.testDate || 'session'}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function init() {
+      renderRoomSelect();
+      document.getElementById('roomSelect').addEventListener('change', e => {
+        saveData();
+        currentRoom = e.target.value;
+        renderRoom();
+        document.getElementById('roomSelect').value = currentRoom;
+      });
+      renderRoom();
+      setInterval(saveData, 15000);
+    }
+
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
