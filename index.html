@@ -347,7 +347,7 @@
         </div>
         <div class="actions">
           <button class="secondary" onclick="downloadJson()">Export JSON</button>
-          <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+          <button class="secondary" onclick="exportPdf()">Export PDF Report</button>
           <button class="danger" onclick="clearCurrentRoomData()">Clear Current Room Data</button>
           <button class="primary" onclick="markComplete()">Mark Complete</button>
         </div>
@@ -431,10 +431,10 @@
       "Dallas 3": {
         type: "Wireless Collaboration Room",
         workflow: "Wireless collaboration through Max Connect session shown on display. Room peripherals are available to a UC client on the user device. MPX is used for USB-C charging only. Display ON/OFF controlled by Impera Uniform 8U.",
-        equipment: ["TesiraCONNECT TC-5", "Parlé VBC 2500", "Max Connect", "Impera Uniform 8U", "Evoko Naso"],
+        equipment: ["TesiraCONNECT TC-5", "Parlé VBC 2500", "Max Connect", "Touch 8 Max", "Impera Uniform 8U", "Evoko Naso"],
         sections: [
           section("Room Readiness", [
-            test("Physical room and display readiness", "Verify display is intact, Max Connect session information is visible or available, and no visible cables/devices are disconnected."),
+            test("Physical room and display readiness", "Verify display is intact, Max Connect session information is visible or available, Touch 8 Max is present, and no visible cables/devices are disconnected."),
             test("Evoko Naso panel check", "Verify the Naso panel is powered, responsive, shows Dallas 3, and displays room availability.")
           ]),
           section("Display Control", [
@@ -444,6 +444,7 @@
             test("Session visibility", "Confirm the display shows the Max Connect session name, join instructions, or QR/session information."),
             test("Wireless connection", "Connect a laptop to the Max Connect session. Confirm the device joins successfully."),
             test("Wireless screen share", "Share laptop screen wirelessly. Confirm content appears on display with stable image and acceptable latency."),
+            test("Touch 8 Max control", "Use Touch 8 Max to confirm expected session controls are responsive, including start/stop/share or equivalent controls available in the room.")
           ]),
           section("UC Peripheral Access", [
             test("VBC 2500 camera access", "Open UC client on laptop and confirm the Parlé VBC 2500 camera is available and provides live video."),
@@ -860,7 +861,7 @@
       renderRoom();
     }
 
-    function downloadJSON() {
+    function downloadJson() {
       const data = getData();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -869,6 +870,13 @@
       a.download = `${data.room.replaceAll(' ', '_')}_AV_Test_${data.testDate || 'session'}.json`;
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    function exportPdf() {
+      expandAll();
+      const data = getData();
+      document.title = `${data.room} AV Test Report ${data.testDate || ''}`;
+      setTimeout(() => window.print(), 150);
     }
 
     function init() {
